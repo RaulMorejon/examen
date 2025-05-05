@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <title>Plantes Fotovoltaiques</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .alta-potencia {
+            background-color: lightgreen;
+        }
+        .baixa-potencia {
+            background-color: lightyellow;
+        }
+        h2 {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plantes Fotovoltaiques</h1>
+    
+    <h2>Baix Ebre</h2>
+    <table id="taula-baix-ebre">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Municipi</th>
+                <th>Potència (MW)</th>
+                <th>Superfície (ha)</th>
+                <th>Sol·licitant</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Montsià</h2>
+    <table id="taula-montsia">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Municipi</th>
+                <th>Potència (MW)</th>
+                <th>Superfície (ha)</th>
+                <th>Sol·licitant</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        fetch('fotovoltaiques.json')
+            .then(response => response.json())
+            .then(data => {
+                const files = data.response.rows.row;
+                const taulaBaixEbre = document.querySelector('#taula-baix-ebre tbody');
+                const taulaMontsia = document.querySelector('#taula-montsia tbody');
+
+                files.forEach(planta => {
+                    const comarca = planta.comarca;
+                    const potencia = parseFloat(planta.potencia_mw);
+                    const tr = document.createElement('tr');
+                    tr.className = potencia >= 5 ? 'alta-potencia' : 'baixa-potencia';
+
+                    tr.innerHTML = `
+                        <td>${planta.nom}</td>
+                        <td>${planta.municipi}</td>
+                        <td>${planta.potencia_mw}</td>
+                        <td>${planta.superficie_ha}</td>
+                        <td>${planta.sol_licitant}</td>
+                    `;
+
+                    if (comarca === "Baix Ebre") {
+                        taulaBaixEbre.appendChild(tr);
+                    } else if (comarca === "Montsià") {
+                        taulaMontsia.appendChild(tr);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Error en carregar les dades:", error);
+            });
+    </script>
+</body>
+</html>
